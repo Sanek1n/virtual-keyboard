@@ -50,25 +50,35 @@ const buttons = {
     }
   }
 
-  const keyboardBlock = document.querySelector('.keyboard');
+const buttonSize = { '1': '', '2': 'medium ', '3': 'big ', '4': 'space '};
 
+addBlocks();
+const keyboardBlock = document.querySelector('.keyboard');
 addButtons();
+
+function addBlocks() {
+    document.body.insertAdjacentHTML('afterbegin', 
+    `<div class="main">
+    <div class="text-block">
+    <textarea class="text-area" autofocus="true" placeholder="C:\\>_*Смена раскладки Ctrl+Shift*"></textarea>
+    </div>
+    <div class="keyboard"></div>
+    </div>`);
+}
+
 
 function addButtons() {
     let lineBlock;
-    let buttonSize = { '1': '', '2': 'medium ', '3': 'big ', '4': 'space '};
-    console.log( Object.keys(buttons).length)
     for (let i = 0; i < Object.keys(buttons).length; i++) {
         keyboardBlock.insertAdjacentHTML('beforeend', `<div class="line ${buttons[i]["line"]}"></div>`);
         lineBlock = document.querySelector(`.${buttons[i]["line"]}`);
-
         for (let j = 0; j < buttons[i]["button-size"].length; j++) {
-            lineBlock.insertAdjacentHTML('beforeend', `<div class="${buttonSize[buttons[i]["button-size"][j]]}button">
-                    <span class="caption">${buttons[i]["lower-EN"][j]}</span>
-                    </div>`)
-
+            lineBlock.insertAdjacentHTML('beforeend', `<div class="${buttonSize[buttons[i]["button-size"][j]]}button" data-buttonid='${i}:${j}'>
+                    <span class="caption">${buttons[i]["lower-EN"][j]}</span></div>`);
         }
     }
 }
+
+
 
 
