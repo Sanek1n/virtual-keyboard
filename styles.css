@@ -78,13 +78,16 @@ textarea::placeholder {
     height: var(--width-button);
     border-radius: 8px;
     background: gray;
-    display: flex;
-    align-content: center;
     border: 1px double black;
+    display: block;
+    text-align: center;
+    font-size: var(--font-size);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin: auto;
     transition: 0.2s;
 }
 
-.button:hover {
+.push {
     transform: scale(0.97);
     opacity: 0.5;
 }
@@ -101,10 +104,3 @@ textarea::placeholder {
     width: calc(var(--width-button)*8);
 }
 
-.caption {
-    display: block;
-    text-align: center;
-    font-size: var(--font-size);
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    margin: auto;
-}

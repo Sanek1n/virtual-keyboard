@@ -51,10 +51,16 @@ const buttons = {
   }
 
 const buttonSize = { '1': '', '2': 'medium ', '3': 'big ', '4': 'space '};
+let layout = 'lower-EN';
 
 addBlocks();
 const keyboardBlock = document.querySelector('.keyboard');
+const outputBlock = document.querySelector('.text-area');
 addButtons();
+
+addButtonsListener();
+
+outputBlock.addEventListener('keydown', buttonPress);
 
 function addBlocks() {
     document.body.insertAdjacentHTML('afterbegin', 
@@ -73,12 +79,74 @@ function addButtons() {
         keyboardBlock.insertAdjacentHTML('beforeend', `<div class="line ${buttons[i]["line"]}"></div>`);
         lineBlock = document.querySelector(`.${buttons[i]["line"]}`);
         for (let j = 0; j < buttons[i]["button-size"].length; j++) {
-            lineBlock.insertAdjacentHTML('beforeend', `<div class="${buttonSize[buttons[i]["button-size"][j]]}button" data-buttonid='${i}:${j}'>
-                    <span class="caption">${buttons[i]["lower-EN"][j]}</span></div>`);
+            lineBlock.insertAdjacentHTML('beforeend', `<button class="button ${buttonSize[buttons[i]["button-size"][j]]}" 
+            data-rowid='${i}' data-colid='${j}' data-code='${buttons[i]["code"][j]}'>${buttons[i]["lower-EN"][j]}</button>`);
         }
     }
 }
 
+function addButtonsListener() {
+    const buttonsArray = document.querySelectorAll('.button');
+    buttonsArray.forEach((element) => {
+        element.addEventListener('click', buttonClick);
+    });
+}
 
+function buttonClick() {
+    let rowId = this.dataset.rowid;
+    let colId = this.dataset.colid;
+    let buttonElement = this;
+    this.classList.add('push');
+    
+    switch (buttons[rowId]['code'][colId]) {
+        case ('Space'):
+            outputBlock.value += buttons[rowId][layout][colId];
+            break;
+
+        case ('Backspace'):
+            outputBlock.value = outputBlock.value.substring(0, outputBlock.value.length - 1);
+            break;
+
+        case ('Enter'):
+            outputBlock.value += "\n";
+            break;
+        
+        case ('CapsLock'):
+
+            break;
+
+        default:
+            outputBlock.value += buttons[rowId][layout][colId];
+    }
+
+    buttonElement.addEventListener("transitionend", () => {
+        buttonElement.classList.remove('push');
+        console.log(buttonElement);
+    });
+    outputBlock.focus();
+}
+
+function searchKeyCode(findCode) {
+    let indexCode;
+    
+    for (let i = 0; i < Object.keys(buttons).length; i++) {
+        indexCode = buttons[i]["code"].indexOf(findCode)
+        if (indexCode != -1) {
+            
+            return {'rowId': i, 'colId': indexCode};
+        }
+    }
+}
+
+function buttonPress() {
+    //let {rowId, colId} = searchKeyCode(event.code);
+
+    let buttonElement = document.querySelector(`[data-code="${event.code}"]`);
+
+    buttonElement.classList.add('push');
+    buttonElement.addEventListener("transitionend", () => {
+        buttonElement.classList.remove('push');
+    });
+}
 
 
