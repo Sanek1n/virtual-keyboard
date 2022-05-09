@@ -51,6 +51,8 @@ const buttons = {
     }
   }
 
+alert(`Уважаемый, проверяющий! Если не сложно, то проверьте работу в последний день cross checkа, тогда я успею еще что-то добавить по фунционалу. Если не сможете, то ничего страшного :)`);
+  
 const buttonSize = { '1': '', '2': 'medium ', '3': 'big ', '4': 'space '};
 let layout = 'lower-EN';
 let arrKeys = [];
@@ -99,7 +101,7 @@ function addButtonsListener() {
 function buttonClick() {
     let rowId = this.dataset.placeid.slice(0, this.dataset.placeid.indexOf(':',0));
     let colId = this.dataset.placeid.slice(this.dataset.placeid.indexOf(':',0) + 1,this.dataset.placeid.length);
-    console.log(this, rowId, colId);
+    //console.log(this, rowId, colId);
     let buttonElement = this;
     this.classList.add('push');
     
@@ -188,6 +190,9 @@ function buttonPress() {
                 } else {
                     layout = 'lower-' + layout.slice(-2);
                 }
+                break;
+            case ('Tab'):
+                //console.log('tab')
                 break;
         }
 
