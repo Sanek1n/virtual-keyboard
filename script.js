@@ -5,7 +5,7 @@ const buttons = {
         'upper-EN': ['~','!','@','#','$','%','^','&','*','(',')','_','+','Backspace'],
         'lower-RU': ['ё','1','2','3','4','5','6','7','8','9','0','-','=','Backspace'],
         'upper-RU': ['Ё','!','"','№',';','%',':','?','*','(',')','_','+','Backspace'],
-        'caps': [1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        'caps': [2,0,0,0,0,0,0,0,0,0,0,0,0,0],
         'button-size': [1,1,1,1,1,1,1,1,1,1,1,1,1,3],
         'code': ['Backquote','Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0','Minus','Equal','Backspace']
     },
@@ -15,9 +15,9 @@ const buttons = {
         'upper-EN': ['Tab','Q','W','E','R','T','Y','U','I','O','P',`{`,`}`,`|`],
         'lower-RU': ['Tab','й','ц','у','к','е','н','г','ш','щ','з',`х`,`ъ`,`\\`],
         'upper-RU': ['Tab','Й','Ц','У','К','Е','Н','Г','Ш','Щ','З',`Х`,`Х`,`/`],
-        'caps': [0,1,1,1,1,1,1,1,1,1,1,1,1,0],
+        'caps': [0,1,1,1,1,1,1,1,1,1,1,2,2,0],
         'button-size': [2,1,1,1,1,1,1,1,1,1,1,1,1,1],
-        'code': ['Tab','KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','Keyi','KeyO','KeyP','BracketLeft','BracketRight','IntlYen']
+        'code': ['Tab','KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP','BracketLeft','BracketRight','Backslash']
     },
     '2':{
         'line': 'third',
@@ -25,7 +25,7 @@ const buttons = {
         'upper-EN': ['Caps Lock','A','S','D','F','G','H','J','K','L',':',`"`,`Enter`],
         'lower-RU': ['Caps Lock','ф','ы','в','а','п','р','о','л','д','ж',`э`,`Enter`],
         'upper-RU': ['Caps Lock','Ф','Ы','В','А','П','Р','О','Л','Д','Ж',`Э`,`Enter`],
-        'caps': [0,1,1,1,1,1,1,1,1,1,1,1,0],
+        'caps': [0,1,1,1,1,1,1,1,1,1,2,2,0],
         'button-size': [2,1,1,1,1,1,1,1,1,1,1,1,3],
         'code': ['CapsLock','KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon','Quote','Enter']
     },
@@ -35,7 +35,7 @@ const buttons = {
         'upper-EN': ['Shift','Z','X','C','V','B','N','M','<','>','?',`Shift`],
         'lower-RU': ['Shift','я','ч','с','м','и','т','ь','б','ю','.',`Shift`],
         'upper-RU': ['Shift','Я','Ч','С','М','И','Т','Ь','Б','Ю',',',`Shift`],
-        'caps': [0,1,1,1,1,1,1,1,1,1,1,0],
+        'caps': [0,1,1,1,1,1,1,1,2,2,0,0],
         'button-size': [3,1,1,1,1,1,1,1,1,1,1,3],
         'code': ['ShiftLeft','KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash','ShiftRight']
     },
@@ -45,6 +45,7 @@ const buttons = {
         'upper-EN': ['Сtrl','Win','Alt','','Alt','Ctrl'],
         'lower-RU': ['Сtrl','Win','Alt','','Alt','Ctrl'],
         'upper-RU': ['Сtrl','Win','Alt','','Alt','Ctrl'],
+        'caps': [0,0,0,0,0,0],
         'button-size': [2,1,2,4,2,2],
         'code': ['ControlRight','MetaLeft','AltLeft','Space','AltRight','ControlRight']
     }
@@ -80,7 +81,7 @@ function addButtons() {
         lineBlock = document.querySelector(`.${buttons[i]["line"]}`);
         for (let j = 0; j < buttons[i]["button-size"].length; j++) {
             lineBlock.insertAdjacentHTML('beforeend', `<button class="button ${buttonSize[buttons[i]["button-size"][j]]}" 
-            data-rowid='${i}' data-colid='${j}' data-code='${buttons[i]["code"][j]}'>${buttons[i]["lower-EN"][j]}</button>`);
+            data-placeid='${i}:${j}' data-code='${buttons[i]["code"][j]}'>${buttons[i]["lower-EN"][j]}</button>`);
         }
     }
 }
@@ -93,8 +94,9 @@ function addButtonsListener() {
 }
 
 function buttonClick() {
-    let rowId = this.dataset.rowid;
-    let colId = this.dataset.colid;
+    let rowId = this.dataset.placeid.slice(0, this.dataset.placeid.indexOf(':',0));
+    let colId = this.dataset.placeid.slice(this.dataset.placeid.indexOf(':',0) + 1,this.dataset.placeid.length);
+    console.log(this, rowId, colId);
     let buttonElement = this;
     this.classList.add('push');
     
@@ -112,7 +114,14 @@ function buttonClick() {
             break;
         
         case ('CapsLock'):
-
+            if (layout.slice(0,5) == 'lower') {
+                layout = 'upper-' + layout.slice(-2);
+                buttonElement.classList.add('on');
+            } else {
+                layout = 'lower-' + layout.slice(-2);
+                buttonElement.classList.remove('on');
+            }
+            changeCaps();
             break;
 
         default:
@@ -121,32 +130,52 @@ function buttonClick() {
 
     buttonElement.addEventListener("transitionend", () => {
         buttonElement.classList.remove('push');
-        console.log(buttonElement);
+        //console.log(buttonElement);
     });
     outputBlock.focus();
 }
 
-function searchKeyCode(findCode) {
-    let indexCode;
-    
-    for (let i = 0; i < Object.keys(buttons).length; i++) {
-        indexCode = buttons[i]["code"].indexOf(findCode)
-        if (indexCode != -1) {
-            
-            return {'rowId': i, 'colId': indexCode};
-        }
-    }
-}
+
 
 function buttonPress() {
-    //let {rowId, colId} = searchKeyCode(event.code);
-
+    
     let buttonElement = document.querySelector(`[data-code="${event.code}"]`);
+    //console.log(buttonElement);
+    if (!isFinite(buttonElement)) {
+        buttonElement.classList.add('push');
 
-    buttonElement.classList.add('push');
-    buttonElement.addEventListener("transitionend", () => {
-        buttonElement.classList.remove('push');
-    });
+        switch (event.code) {
+            case ('CapsLock'):
+                if (layout.slice(0,5) == 'lower') {
+                    layout = 'upper-' + layout.slice(-2);
+                    buttonElement.classList.add('on');
+                } else {
+                    layout = 'lower-' + layout.slice(-2);
+                    buttonElement.classList.remove('on');
+                }
+                changeCaps();
+                break;
+        }
+
+
+        buttonElement.addEventListener("transitionend", () => {
+            buttonElement.classList.remove('push');
+        });
+    };
 }
 
+function changeCaps() {
+    let buttonElements;
+    for (let i = 0; i < Object.keys(buttons).length; i++) {
+        for (let j = 0; j < buttons[i]["caps"].length; j++) {
+            if (buttons[i]["caps"][j] == 1) {
+                buttonElements = document.querySelector(`[data-placeid="${i}:${j}"]`);
+                buttonElements.textContent = buttons[i][layout][j];
+            } else if (buttons[i]["caps"][j] == 2 && layout.slice(-2) === "RU") {
+                buttonElements = document.querySelector(`[data-placeid="${i}:${j}"]`);
+                buttonElements.textContent = buttons[i][layout][j];
+            }
+    }
+}
+}
 

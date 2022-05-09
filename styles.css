@@ -92,6 +92,10 @@ textarea::placeholder {
     opacity: 0.5;
 }
 
+.on {
+    color: greenyellow;
+}
+
 .big {
     width: calc(var(--width-button)*3);
 }
