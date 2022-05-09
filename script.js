@@ -53,6 +53,8 @@ const buttons = {
 
 const buttonSize = { '1': '', '2': 'medium ', '3': 'big ', '4': 'space '};
 let layout = 'lower-EN';
+let arrKeys = [];
+let isCaps = false;
 
 addBlocks();
 const keyboardBlock = document.querySelector('.keyboard');
@@ -62,6 +64,7 @@ addButtons();
 addButtonsListener();
 
 outputBlock.addEventListener('keydown', buttonPress);
+outputBlock.addEventListener('keyup', buttonRelease);
 
 function addBlocks() {
     document.body.insertAdjacentHTML('afterbegin', 
@@ -116,14 +119,30 @@ function buttonClick() {
         case ('CapsLock'):
             if (layout.slice(0,5) == 'lower') {
                 layout = 'upper-' + layout.slice(-2);
+                isCaps = true;
                 buttonElement.classList.add('on');
             } else {
                 layout = 'lower-' + layout.slice(-2);
+                isCaps = false;
                 buttonElement.classList.remove('on');
             }
             changeCaps();
             break;
-
+        case ('Tab'):
+            outputBlock.value += '  ';
+            break;
+        case ('ShiftLeft'):
+            break;
+        case ('ShiftRight'):
+            break;
+        case ('ControlRight'):
+            break;
+        case ('ControlLeft'):
+            break;
+        case ('AltRight'):
+            break;
+        case ('AltLeft'):
+            break;
         default:
             outputBlock.value += buttons[rowId][layout][colId];
     }
@@ -155,6 +174,21 @@ function buttonPress() {
                 }
                 changeCaps();
                 break;
+            case ('ShiftLeft'):
+                if (!isCaps) {
+                    layout = 'upper-' + layout.slice(-2);
+
+                } else {
+                    layout = 'lower-' + layout.slice(-2);
+                }
+                break;
+            case ('ShiftRight'):
+                if (!isCaps) {
+                    layout = 'upper-' + layout.slice(-2);
+                } else {
+                    layout = 'lower-' + layout.slice(-2);
+                }
+                break;
         }
 
 
@@ -162,6 +196,10 @@ function buttonPress() {
             buttonElement.classList.remove('push');
         });
     };
+}
+
+function buttonRelease() {
+
 }
 
 function changeCaps() {
@@ -175,6 +213,16 @@ function changeCaps() {
                 buttonElements = document.querySelector(`[data-placeid="${i}:${j}"]`);
                 buttonElements.textContent = buttons[i][layout][j];
             }
+    }
+}
+}
+
+function changeShift() {
+    let buttonElements;
+    for (let i = 0; i < Object.keys(buttons).length; i++) {
+        for (let j = 0; j < buttons[i]["caps"].length; j++) {
+                buttonElements = document.querySelector(`[data-placeid="${i}:${j}"]`);
+                buttonElements.textContent = buttons[i][layout][j];
     }
 }
 }
