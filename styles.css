@@ -1,5 +1,5 @@
 :root {
-    --width-button: 55px;
+    --width-button: 60px;
     --font-size: 20px;
 }
 
@@ -55,7 +55,7 @@ textarea::placeholder {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    gap: 10px;
+    gap: 5px;
     justify-content: space-between;
     align-content: space-between;
     border: 2px solid rgb(71, 71, 71);
@@ -108,6 +108,6 @@ textarea::placeholder {
 }
 
 .space {
-    width: calc(var(--width-button)*8);
+    width: calc(var(--width-button)*6);
 }
 
