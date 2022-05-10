@@ -47,12 +47,11 @@ const buttons = {
         'upper-RU': ['Сtrl','Win','Alt','','Alt','Ctrl'],
         'caps': [0,0,0,0,0,0],
         'button-size': [2,1,2,4,2,2],
-        'code': ['ControlRight','MetaLeft','AltLeft','Space','AltRight','ControlRight']
+        'code': ['ControlLeft','MetaLeft','AltLeft','Space','AltRight','ControlRight']
     }
   }
 
-alert(`Уважаемый, проверяющий! Если не сложно, то проверьте работу в последний день cross checkа, тогда я успею еще что-то добавить по фунционалу. Если не сможете, то ничего страшного :)`);
-  
+ 
 const buttonSize = { '1': '', '2': 'medium ', '3': 'big ', '4': 'space '};
 let layout = 'lower-EN';
 let arrKeys = [];
@@ -65,14 +64,14 @@ addButtons();
 
 addButtonsListener();
 
-outputBlock.addEventListener('keydown', buttonPress);
-outputBlock.addEventListener('keyup', buttonRelease);
+//outputBlock.addEventListener('keydown', buttonPress);
+//outputBlock.addEventListener('keyup', buttonRelease);
 
 function addBlocks() {
     document.body.insertAdjacentHTML('afterbegin', 
     `<div class="main">
     <div class="text-block">
-    <textarea class="text-area" autofocus="true" placeholder="C:\\>_*Смена раскладки Ctrl+Shift*"></textarea>
+    <textarea class="text-area" autofocus="true" disabled  placeholder="C:\\>_*Смена раскладки Ctrl+Shift*"></textarea>
     </div>
     <div class="keyboard"></div>
     </div>`);
@@ -96,6 +95,10 @@ function addButtonsListener() {
     buttonsArray.forEach((element) => {
         element.addEventListener('click', buttonClick);
     });
+
+    document.addEventListener('keydown', buttonPress);
+    document.addEventListener('keyup', buttonRelease);
+ 
 }
 
 function buttonClick() {
@@ -107,7 +110,7 @@ function buttonClick() {
     
     switch (buttons[rowId]['code'][colId]) {
         case ('Space'):
-            outputBlock.value += buttons[rowId][layout][colId];
+            outputBlock.value += ' ';
             break;
 
         case ('Backspace'):
@@ -131,7 +134,7 @@ function buttonClick() {
             changeCaps();
             break;
         case ('Tab'):
-            outputBlock.value += '  ';
+            outputBlock.value += '      ';
             break;
         case ('ShiftLeft'):
             break;
@@ -145,15 +148,17 @@ function buttonClick() {
             break;
         case ('AltLeft'):
             break;
+        case ('MetaLeft'):
+            break;
         default:
-            outputBlock.value += buttons[rowId][layout][colId];
+                outputBlock.value += buttonElement.textContent;
     }
 
     buttonElement.addEventListener("transitionend", () => {
         buttonElement.classList.remove('push');
         //console.log(buttonElement);
     });
-    outputBlock.focus();
+    buttonElement.blur();
 }
 
 
@@ -169,41 +174,95 @@ function buttonPress() {
             case ('CapsLock'):
                 if (layout.slice(0,5) == 'lower') {
                     layout = 'upper-' + layout.slice(-2);
+                    isCaps = true;
                     buttonElement.classList.add('on');
                 } else {
                     layout = 'lower-' + layout.slice(-2);
+                    isCaps = false;
                     buttonElement.classList.remove('on');
                 }
                 changeCaps();
                 break;
             case ('ShiftLeft'):
-                if (!isCaps) {
+                if (layout.slice(0,5) == 'lower') {
                     layout = 'upper-' + layout.slice(-2);
-
                 } else {
                     layout = 'lower-' + layout.slice(-2);
                 }
+                changeShift()
                 break;
             case ('ShiftRight'):
-                if (!isCaps) {
+                if (layout.slice(0,5) == 'lower') {
                     layout = 'upper-' + layout.slice(-2);
                 } else {
                     layout = 'lower-' + layout.slice(-2);
                 }
+                changeShift()
+                break;
+                
+            case ('ControlLeft'):
+                if (event.code === 'ControlLeft') {
+                    if (layout.slice(-2) == 'EN') {
+                        layout = layout.slice(0, layout.indexOf('-',0)) + 'RU';
+                        changeCaps();
+                    } else {
+                        layout = layout.slice(0, layout.indexOf('-',0)) + 'EN';
+                        changeCaps();
+                    }
+                }
+                break;
+            case ('Enter'):
+                break;
+            case ('ControlRight'):
+                break;
+            case ('AltRight'):
+                break;
+            case ('AltLeft'):
+                break;
+            case ('MetaLeft'):
                 break;
             case ('Tab'):
+                event.preventDefault();
+                outputBlock.value += '      ';
                 //console.log('tab')
                 break;
+            case ('Backspace'):
+                outputBlock.value = outputBlock.value.substring(0, outputBlock.value.length - 1);
+                break;
+            default:
+                if (layout.slice(0,5) !== 'lower') {
+                    outputBlock.value += event.key.toUpperCase();
+                } else {
+                    outputBlock.value += event.key.toLowerCase();
+                }
         }
 
-
-        buttonElement.addEventListener("transitionend", () => {
-            buttonElement.classList.remove('push');
-        });
-    };
+}
 }
 
 function buttonRelease() {
+    let buttonElement = document.querySelector(`[data-code="${event.code}"]`);
+ 
+    switch (event.code) {
+        case ('ShiftLeft'):
+            if (layout.slice(0,5) == 'lower') {
+                layout = 'upper-' + layout.slice(-2);
+            } else {
+                layout = 'lower-' + layout.slice(-2);
+            }
+            changeShift()
+            break;
+        case ('ShiftRight'):
+            if (layout.slice(0,5) == 'lower') {
+                layout = 'upper-' + layout.slice(-2);
+            } else {
+                layout = 'lower-' + layout.slice(-2);
+            }
+            changeShift()
+            break;
+    }
+    
+    buttonElement.classList.remove('push');
 
 }
 

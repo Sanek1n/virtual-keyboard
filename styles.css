@@ -80,13 +80,18 @@ textarea::placeholder {
     display: block;
     text-align: center;
     font-size: var(--font-size);
+    color: aliceblue;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     margin: auto;
+    cursor: pointer;
     transition: 0.2s;
 }
 
+.button:hover {
+  box-shadow:   inset 0 -2em 1em rgba(0,0,0,0.2);
+}
 .push {
-    transform: scale(0.97);
+    transform: scale(0.9);
     opacity: 0.5;
 }
 
