@@ -14,7 +14,7 @@ const buttons = {
         'lower-EN': ['Tab','q','w','e','r','t','y','u','i','o','p',`[`,`]`,`\\`],
         'upper-EN': ['Tab','Q','W','E','R','T','Y','U','I','O','P',`{`,`}`,`|`],
         'lower-RU': ['Tab','й','ц','у','к','е','н','г','ш','щ','з',`х`,`ъ`,`\\`],
-        'upper-RU': ['Tab','Й','Ц','У','К','Е','Н','Г','Ш','Щ','З',`Х`,`Х`,`/`],
+        'upper-RU': ['Tab','Й','Ц','У','К','Е','Н','Г','Ш','Щ','З',`Х`,`Ъ`,`/`],
         'caps': [0,1,1,1,1,1,1,1,1,1,1,2,2,0],
         'button-size': [2,1,1,1,1,1,1,1,1,1,1,1,1,1],
         'code': ['Tab','KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP','BracketLeft','BracketRight','Backslash']
@@ -36,27 +36,30 @@ const buttons = {
         'lower-RU': ['Shift','я','ч','с','м','и','т','ь','б','ю','.',`Shift`],
         'upper-RU': ['Shift','Я','Ч','С','М','И','Т','Ь','Б','Ю',',',`Shift`],
         'caps': [0,1,1,1,1,1,1,1,2,2,0,0],
-        'button-size': [3,1,1,1,1,1,1,1,1,1,1,3],
-        'code': ['ShiftLeft','KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash','ShiftRight']
+        'button-size': [3,1,1,1,1,1,1,1,1,1,1,2],
+        'code': ['ShiftLeft','KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash', 'ShiftRight']
     },
     '4':{
         'line': 'fifth',
-        'lower-EN': ['Сtrl','Win','Alt','','Alt','Ctrl'],
-        'upper-EN': ['Сtrl','Win','Alt','','Alt','Ctrl'],
-        'lower-RU': ['Сtrl','Win','Alt','','Alt','Ctrl'],
-        'upper-RU': ['Сtrl','Win','Alt','','Alt','Ctrl'],
-        'caps': [0,0,0,0,0,0],
-        'button-size': [2,1,2,4,2,2],
-        'code': ['ControlRight','MetaLeft','AltLeft','Space','AltRight','ControlRight']
+        'lower-EN': ['Сtrl','Alt','','Alt','Ctrl','◄','▼','▲','►'],
+        'upper-EN': ['Сtrl','Alt','','Alt','Ctrl','◄','▼','▲','►'],
+        'lower-RU': ['Сtrl','Alt','','Alt','Ctrl','◄','▼','▲','►'],
+        'upper-RU': ['Сtrl','Alt','','Alt','Ctrl','◄','▼','▲','►'],
+        'caps': [0,0,0,0,0,0,0,0,0],
+        'button-size': [2,2,4,2,2,1,1,1,1],
+        'code': ['ControlLeft','AltLeft','Space','AltRight','ControlRight','ArrowLeft','ArrowDown','ArrowUp','ArrowRight']
     }
   }
 
-alert(`Уважаемый, проверяющий! Если не сложно, то проверьте работу в последний день cross checkа, тогда я успею еще что-то добавить по фунционалу. Если не сможете, то ничего страшного :)`);
-  
+ 
 const buttonSize = { '1': '', '2': 'medium ', '3': 'big ', '4': 'space '};
 let layout = 'lower-EN';
 let arrKeys = [];
 let isCaps = false;
+
+window.addEventListener('beforeunload', setLocalStorage);
+window.addEventListener('load', getLocalStorage);
+
 
 addBlocks();
 const keyboardBlock = document.querySelector('.keyboard');
@@ -65,14 +68,11 @@ addButtons();
 
 addButtonsListener();
 
-outputBlock.addEventListener('keydown', buttonPress);
-outputBlock.addEventListener('keyup', buttonRelease);
-
 function addBlocks() {
     document.body.insertAdjacentHTML('afterbegin', 
     `<div class="main">
     <div class="text-block">
-    <textarea class="text-area" autofocus="true" placeholder="C:\\>_*Смена раскладки Ctrl+Shift*"></textarea>
+    <textarea class="text-area" autofocus="true" disabled  placeholder="*Windows keyboard* /To change the language press the left Ctrl+Shift/"></textarea>
     </div>
     <div class="keyboard"></div>
     </div>`);
@@ -96,18 +96,21 @@ function addButtonsListener() {
     buttonsArray.forEach((element) => {
         element.addEventListener('click', buttonClick);
     });
+
+    document.addEventListener('keydown', buttonPress);
+    document.addEventListener('keyup', buttonRelease);
+ 
 }
 
 function buttonClick() {
     let rowId = this.dataset.placeid.slice(0, this.dataset.placeid.indexOf(':',0));
     let colId = this.dataset.placeid.slice(this.dataset.placeid.indexOf(':',0) + 1,this.dataset.placeid.length);
-    //console.log(this, rowId, colId);
     let buttonElement = this;
     this.classList.add('push');
     
     switch (buttons[rowId]['code'][colId]) {
         case ('Space'):
-            outputBlock.value += buttons[rowId][layout][colId];
+            outputBlock.value += ' ';
             break;
 
         case ('Backspace'):
@@ -131,7 +134,7 @@ function buttonClick() {
             changeCaps();
             break;
         case ('Tab'):
-            outputBlock.value += '  ';
+            outputBlock.value += '      ';
             break;
         case ('ShiftLeft'):
             break;
@@ -146,14 +149,13 @@ function buttonClick() {
         case ('AltLeft'):
             break;
         default:
-            outputBlock.value += buttons[rowId][layout][colId];
+                outputBlock.value += buttonElement.textContent;
     }
 
     buttonElement.addEventListener("transitionend", () => {
         buttonElement.classList.remove('push');
-        //console.log(buttonElement);
     });
-    outputBlock.focus();
+    buttonElement.blur();
 }
 
 
@@ -161,49 +163,114 @@ function buttonClick() {
 function buttonPress() {
     
     let buttonElement = document.querySelector(`[data-code="${event.code}"]`);
-    //console.log(buttonElement);
     if (!isFinite(buttonElement)) {
         buttonElement.classList.add('push');
-
+        arrKeys.push(event.code);
         switch (event.code) {
+            case ('Space'):
+                outputBlock.value += ' ';
+                break;
+
             case ('CapsLock'):
                 if (layout.slice(0,5) == 'lower') {
                     layout = 'upper-' + layout.slice(-2);
+                    isCaps = true;
                     buttonElement.classList.add('on');
                 } else {
                     layout = 'lower-' + layout.slice(-2);
+                    isCaps = false;
                     buttonElement.classList.remove('on');
                 }
                 changeCaps();
                 break;
             case ('ShiftLeft'):
-                if (!isCaps) {
-                    layout = 'upper-' + layout.slice(-2);
-
-                } else {
-                    layout = 'lower-' + layout.slice(-2);
+                if (!event.repeat) {
+                    if (layout.slice(0,5) == 'lower') {
+                        layout = 'upper-' + layout.slice(-2);
+                    } else {
+                        layout = 'lower-' + layout.slice(-2);
+                    }
+                    changeShift();
                 }
                 break;
             case ('ShiftRight'):
-                if (!isCaps) {
+                if (!event.repeat) {
+                    if (layout.slice(0,5) == 'lower') {
+                        layout = 'upper-' + layout.slice(-2);
+                    } else {
+                        layout = 'lower-' + layout.slice(-2);
+                    }
+                    changeShift();
+                }
+                break;
+            case ('Enter'):
+                outputBlock.value += "\n";
+                break;
+            case ('ControlLeft'):
+                break;
+            case ('ControlRight'):
+                break;
+            case ('Enter'):
+                break;
+            case ('ControlRight'):
+                break;
+            case ('AltRight'):
+                break;
+            case ('AltLeft'):
+                break;
+            case ('Tab'):
+                event.preventDefault();
+                outputBlock.value += '      ';
+                break;
+            case ('Backspace'):
+                outputBlock.value = outputBlock.value.substring(0, outputBlock.value.length - 1);
+                break;
+            default:
+                if (layout.slice(0,5) !== 'lower') {
+                    outputBlock.value += buttonElement.textContent.toUpperCase();
+                } else {
+                    outputBlock.value += buttonElement.textContent.toLowerCase();
+                }
+        }
+}
+}
+
+function buttonRelease() {
+    let buttonElement = document.querySelector(`[data-code="${event.code}"]`);
+ 
+    switch (event.code) {
+        case ('ShiftLeft'):
+                if (layout.slice(0,5) == 'lower') {
                     layout = 'upper-' + layout.slice(-2);
                 } else {
                     layout = 'lower-' + layout.slice(-2);
                 }
-                break;
-            case ('Tab'):
-                //console.log('tab')
-                break;
-        }
-
-
-        buttonElement.addEventListener("transitionend", () => {
-            buttonElement.classList.remove('push');
-        });
-    };
-}
-
-function buttonRelease() {
+                changeShift()
+            break;
+        case ('ShiftRight'):
+            if (layout.slice(0,5) == 'lower') {
+                layout = 'upper-' + layout.slice(-2);
+            } else {
+                layout = 'lower-' + layout.slice(-2);
+            }
+            changeShift()
+            break;
+    }
+    
+    if (arrKeys.includes('ShiftLeft') && arrKeys.includes('ControlLeft')) {
+            if (layout.slice(-2) == 'EN') {
+                layout = layout.slice(0, layout.indexOf('-',0) + 1) + 'RU';
+                changeShift();
+            } else {
+                layout = layout.slice(0, layout.indexOf('-',0) + 1) + 'EN';
+                changeShift();
+            }
+    }
+    arrKeys = [];
+    if (!isFinite(buttonElement)) {
+        buttonElement.classList.remove('push');
+    }
+    
 
 }
 
@@ -232,3 +299,13 @@ function changeShift() {
 }
 }
 
+function getLocalStorage() {
+    if (localStorage.getItem('lang')) {
+        layout = localStorage.getItem('lang');
+        changeShift();
+    }
+}
+
+function setLocalStorage () {
+    localStorage.setItem('lang', layout);
+}
