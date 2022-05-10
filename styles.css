@@ -1,5 +1,5 @@
 :root {
-    --width-button: 60px;
+    --width-button: 55px;
     --font-size: 20px;
 }
 
@@ -55,7 +55,7 @@ textarea::placeholder {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    gap: 5px;
+    gap: 10px;
     justify-content: space-between;
     align-content: space-between;
     border: 2px solid rgb(71, 71, 71);
@@ -80,18 +80,13 @@ textarea::placeholder {
     display: block;
     text-align: center;
     font-size: var(--font-size);
-    color: aliceblue;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     margin: auto;
-    cursor: pointer;
     transition: 0.2s;
 }
 
-.button:hover {
-  box-shadow:   inset 0 -2em 1em rgba(0,0,0,0.2);
-}
 .push {
-    transform: scale(0.9);
+    transform: scale(0.97);
     opacity: 0.5;
 }
 
@@ -108,6 +103,6 @@ textarea::placeholder {
 }
 
 .space {
-    width: calc(var(--width-button)*6);
+    width: calc(var(--width-button)*8);
 }
 
